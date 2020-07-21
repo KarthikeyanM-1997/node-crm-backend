@@ -61,7 +61,7 @@ app.post("/register", function (req, res) {
     client.connect(function (err, db) {
         if (err) throw err;
 
-        var dbObject = db.db("crm4");
+        var dbObject = db.db("crm5");
 
         dbObject.collection("userCollTwo").find({ email: email }).toArray(function (err, data) {
             if (err) throw err;
@@ -100,7 +100,7 @@ app.post("/login", function (req, res) {
     client.connect(function (err, db) {
         if (err) throw err;
 
-        var dbObject = db.db("crm4");
+        var dbObject = db.db("crm5");
 
         var testObj = { email: email, pass: pass };
 
@@ -153,7 +153,7 @@ app.get("/dashboard", [tokenAuthorization], function (req, res) {
     client.connect(function (err, db) {
         if (err) throw err;
 
-        var dbObject = db.db("crm4");
+        var dbObject = db.db("crm5");
 
         dbObject.collection("urlCollTwo").find({ email: email }).toArray(function (err, data) {
             if (err) throw err;
@@ -198,7 +198,7 @@ function AdminRoleCheck(req, res, next) {
     client.connect(function (err, db) {
         if (err) throw err;
 
-        var dbObject = db.db("crm4");
+        var dbObject = db.db("crm5");
 
         var testObj = { email: email };
 
@@ -253,7 +253,7 @@ app.get("/verify", function (req, res) {
     client.connect(function (err, db) {
         if (err) throw err;
 
-        var dbObject = db.db("crm4");
+        var dbObject = db.db("crm5");
 
         var testObj = { email: email };
 
@@ -302,7 +302,7 @@ app.post("/assignAsAdmin", function (req, res) {
     client.connect(function (err, db) {
         if (err) throw err;
 
-        var dbObject = db.db("crm4");
+        var dbObject = db.db("crm5");
 
         var testObj = { email: email };
 
@@ -348,7 +348,7 @@ app.post("/createNewLead", [tokenAuthorization], function (req, res) {
         client.connect(function (err, db) {
             if (err) throw err;
 
-            var dbObject = db.db("crm4");
+            var dbObject = db.db("crm5");
 
             var dbRecord = { Name: leadName, Status: "New", Notes: leadNotes, createdBy: email };
 
@@ -392,7 +392,7 @@ app.post("/deleteLead", [tokenAuthorization, AdminRoleCheck], function (req, res
         client.connect(function (err, db) {
             if (err) throw err;
 
-            var dbObject = db.db("crm4");
+            var dbObject = db.db("crm5");
 
             dbObject.collection("leadDB").find({ Name: leadName }).toArray(function (error, data) {
                 if (error) throw error;
@@ -434,7 +434,7 @@ app.post("/updateLead", [tokenAuthorization], function (req, res) {
         client.connect(function (err, db) {
             if (err) throw err;
 
-            var dbObject = db.db("crm4");
+            var dbObject = db.db("crm5");
 
             dbObject.collection("leadDB").find({ Name: leadName }).toArray(function (error, data) {
                 if (error) throw error;
@@ -489,7 +489,7 @@ app.post("/shorten", [tokenAuthorization], function (req, res) {
         client.connect(function (dbError, db) {
             if (dbError) throw dbError;
 
-            var dbObject = db.db("crm4");
+            var dbObject = db.db("crm5");
 
             var dbRecord = { shortURL: shortURL, longURL: url, email: email, count: 0 };
 
@@ -525,7 +525,7 @@ app.get("/:shortURL", function (req, res) {
     client.connect(function (err, db) {
         var dbRecord = { shortURL: shortURL };
 
-        var dbObject = db.db("crm4");
+        var dbObject = db.db("crm5");
 
         var longURL = "";
 
@@ -563,7 +563,7 @@ function sendVerifyMail(email) {
     client.connect(function (err, db) {
         if (err) throw err;
 
-        var dbObject = db.db("crm4");
+        var dbObject = db.db("crm5");
 
         var testObj = { email: email };
 
@@ -617,7 +617,7 @@ app.post("/resetStepOne", function (req, res) {
     client.connect(function (err, db) {
         if (err) throw err;
 
-        var dbObject = db.db("crm4");
+        var dbObject = db.db("crm5");
 
         var testObj = { email: email };
 
@@ -659,7 +659,7 @@ app.post("/resetStepTwo", function (req, res) {
     client.connect(function (err, db) {
         if (err) throw err;
 
-        var dbObject = db.db("crm4");
+        var dbObject = db.db("crm5");
 
         dbObject.collection("userCollTwo").find({ email: email }).toArray(function (err, data) {
             if (err) throw err;
