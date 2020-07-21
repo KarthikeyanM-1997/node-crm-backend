@@ -372,6 +372,39 @@ app.post("/createNewLead", [tokenAuthorization], function (req, res) {
     }
 });
 
+app.post("/viewLead", [tokenAuthorization], function (req, res) {
+
+    let authToken = req.headers.authorization;
+
+    if (authToken === undefined) {
+        res.status(401).end("Unauthorized");
+    }
+    else {
+        var value = jwt.verify(authToken, jwtKey);
+
+        var email = value['email'];
+
+        const client = new MongoClient(uri, { useNewUrlParser: true });
+
+        client.connect(function (err, db) {
+            if (err) throw err;
+
+            var dbObject = db.db("crm5");
+
+            dbObject.collection("leadDB").find({ createdBy: email }).toArray(function (error, data) {
+                if (error) throw error;
+                if (data.length === 0) {
+                    res.status(401).json({ message: "No leads found" });
+                }
+                else {
+                    res.status(200).json(data);
+                }
+            });
+        });
+
+    }
+});
+
 
 app.post("/deleteLead", [tokenAuthorization, AdminRoleCheck], function (req, res) {
 
@@ -465,95 +498,6 @@ app.post("/updateLead", [tokenAuthorization], function (req, res) {
         });
     }
 });
-
-
-app.post("/shorten", [tokenAuthorization], function (req, res) {
-
-    var url = req.body.url;
-
-    let authToken = req.headers.authorization;
-
-    if (authToken === undefined) {
-        res.status(401).end("Unauthorized");
-    }
-    else {
-
-        var value = jwt.verify(authToken, jwtKey);
-
-        var email = value['email'];
-
-        var shortURL = randomstring.generate(4);
-
-        const client = new MongoClient(uri, { useNewUrlParser: true });
-
-        client.connect(function (dbError, db) {
-            if (dbError) throw dbError;
-
-            var dbObject = db.db("crm5");
-
-            var dbRecord = { shortURL: shortURL, longURL: url, email: email, count: 0 };
-
-            console.log(dbRecord);
-
-            dbObject.collection("urlCollTwo").find({ shortURL: shortURL }).toArray(function (error, data) {
-                if (error) throw error;
-                if (data.length === 0) {
-
-                    dbObject.collection("urlCollTwo").insertOne(dbRecord, function (error2, data) {
-                        if (error2) throw error2;
-                        res.status(200).json({ message: "URL Successfully shortened", link: process.env.SERVER + shortURL });
-                        db.close();
-                    });
-
-                }
-                else {
-                    res.status(401).json({ message: "Please Try Again" });
-                }
-            });
-
-        });
-    }
-});
-
-
-app.get("/:shortURL", function (req, res) {
-    const client = new MongoClient(uri, { useNewUrlParser: true });
-
-    var shortURL = req.params.shortURL;
-
-
-    client.connect(function (err, db) {
-        var dbRecord = { shortURL: shortURL };
-
-        var dbObject = db.db("crm5");
-
-        var longURL = "";
-
-        console.log(shortURL);
-
-        dbObject.collection("urlCollTwo").find(dbRecord).toArray(function (error, data) {
-            if (error) throw error;
-            if (data.length === 0) {
-                return res.status(404).end("Invalid URL");
-            }
-            else {
-                dbObject.collection("urlCollTwo").updateOne(dbRecord, { $inc: { count: 1 } }, function (dberr, dbdata) {
-                    if (dberr) throw dberr;
-                    db.close();
-                    console.log(data[0].longURL);
-                    if (data[0].longURL.includes("https://")) {
-                        return res.status(301).redirect(data[0].longURL);
-                    }
-                    else {
-                        return res.status(301).redirect("https://" + data[0].longURL);
-                    }
-                });
-            }
-        });
-
-    });
-});
-
 
 
 function sendVerifyMail(email) {
